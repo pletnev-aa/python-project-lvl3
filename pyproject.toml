@@ -12,9 +12,11 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.6"
 requests = "^2.25.1"
+beautifulsoup4 = "^4.9.3"
+html5lib = "^1.1"
 
 [tool.poetry.scripts]
-pageload = 'pageload.scripts.pageload:main'
+pageload = 'pageload.scripts.page_loader:main'
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"

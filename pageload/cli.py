@@ -1,5 +1,5 @@
-import os
 import argparse
+from pathlib import Path
 
 
 def get_args():
@@ -12,20 +12,9 @@ def get_args():
         '-o', '--output',
         default='.',
         nargs='?',
-        help='output dir (default: "/app")',
-    )
-    parser.add_argument(
-        '-V', '--version',
-        nargs='?',
-        help='output the version number',
+        help='set the directory to save to',
     )
     args = parser.parse_args()
     url = args.url
-    path = get_path(args.output)
+    path = Path(args.output)
     return path, url
-
-
-def get_path(path):
-    if os.getcwd() != path:
-        return os.path.join(os.getcwd() + path)
-    return path

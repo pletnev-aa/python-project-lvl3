@@ -1,16 +1,21 @@
-import os
 import pytest
 import tempfile
-from pageload import pageload
+from pageload import parse, fs
+from pathlib import Path
 
 
-@pytest.mark.parametrize('url,exp_name', [
-    ('https://ru.hexlet.io/courses',
-     'ru-hexlet-io-courses.html'
+@pytest.mark.parametrize('url,html', [
+    ('https://page-loader.hexlet.repl.co/',
+     'tests/fixtures/page-loader-hexlet-repl-co.html',
      ),
 ])
-def test_filename(url, exp_name):
+def test_download_html(url, html):
     with tempfile.TemporaryDirectory() as path:
-        exp_name = os.path.join(path, exp_name)
-        assert os.path.isfile(pageload.download(path, url))
-        assert exp_name == pageload.download(path, url)
+        path = Path(path)
+        name = parse.get_name(url) + '.html'
+        result = fs.save_data(
+            path / name,
+            parse.get_data(url)
+        )
+        assert Path.is_file(result)
+        assert open(result).read() == open(html).read()
