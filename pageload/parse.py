@@ -6,7 +6,7 @@ from urllib import parse, error
 
 
 TAGS = {
-    # 'link': 'href',
+    'link': 'href',
     'script': 'src',
     'img': 'src',
 }
