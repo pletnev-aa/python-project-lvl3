@@ -51,9 +51,7 @@ def get_assets(html, domain, output):
             res = link[name]
             link_domain = parse.urlparse(res).netloc
             if link_domain == domain or link_domain == '':
-                assets[get_name(domain) + get_name(res)] = get_data(
-                    domain + res
-                )
+                assets[get_name(domain) + get_name(res)] = domain + res
                 link[name] = output / Path(get_name(domain) + get_name(res))
         except KeyError:
             continue
