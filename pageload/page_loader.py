@@ -10,5 +10,8 @@ def download(path, url):
     domain = parse.get_domain(url)
     assets, html_soup = parse.get_assets(html, domain, output)
     for asset in assets:
-        assets[asset] = fs.save_data(path / output / asset, assets[asset])
+        assets[asset] = fs.save_data(
+            path / output / asset,
+            parse.get_data(assets[asset])
+        )
     return fs.save_data(path / html_name, html_soup)
