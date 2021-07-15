@@ -2,18 +2,21 @@ import pytest
 import tempfile
 import requests
 import requests_mock
+from requests import exceptions
 from pathlib import Path
 from pageload import parse, fs
 
 
-@pytest.mark.parametrize('url,html,img,exp_html', [
-    ('https://page-loader.hexlet.repl.co',
-     'tests/fixtures/page-loader-hexlet-repl-co.html',
+url = 'https://page-loader.hexlet.repl.co'
+
+
+@pytest.mark.parametrize('html,img,exp_html', [
+    ('tests/fixtures/page-loader-hexlet-repl-co.html',
      'tests/fixtures/page-loader-hexlet-repl-co-assets-professions-nodejs.png',
      'tests/fixtures/expected.html'
      ),
 ])
-def test_download_html(url, html, img, exp_html):
+def test_download_html(html, img, exp_html):
     with open(html) as data:
         test_html = data.read()
         data.close()
@@ -50,3 +53,10 @@ def test_download_html(url, html, img, exp_html):
         assert Path.is_file(finished_img)
         assert Path.read_bytes(finished_img) == test_img
         assert Path.read_text(result) == exp_html
+
+
+def test_response():
+    with pytest.raises(exceptions.RequestException):
+        with requests_mock.Mocker() as mock:
+            mock.get(url, status_code=404)
+            parse.get_data(url)

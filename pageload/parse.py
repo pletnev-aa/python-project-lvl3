@@ -2,7 +2,8 @@ import logging
 import requests
 from pathlib import Path
 from bs4 import BeautifulSoup
-from urllib import parse, error
+from urllib import parse
+from requests import exceptions
 
 
 TAGS = {
@@ -26,14 +27,13 @@ def get_name(obj):
 def get_data(url):
     try:
         r = requests.get(url)
-    except error.HTTPError:
+        r.raise_for_status()
+        return r.content
+    except exceptions.RequestException:
         logging.warning(
             'Error request: {}'.format(url)
         )
-        return None
-    data = r.content
-    r.close()
-    return data
+        raise
 
 
 def get_domain(url):
