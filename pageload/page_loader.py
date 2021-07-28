@@ -1,17 +1,19 @@
 from pageload import fs, parse
+from progress.bar import Bar
 
 
-def download(path, url):
-    data = parse.get_data(url)
-    html_name = parse.get_name(url) + '.html'
-    html = fs.save_data(path / html_name, data)
-    output = parse.get_name(url) + '_files'
-    fs.make_dir(path / output)
-    domain = parse.get_domain(url)
-    assets, html_soup = parse.get_assets(html, domain, output)
-    for asset in assets:
-        assets[asset] = fs.save_data(
-            path / output / asset,
-            parse.get_data(assets[asset])
-        )
-    return fs.save_data(path / html_name, html_soup)
+def download(url, path):
+    data = parse.parse(url)
+    fs.make_dir(path / data['output'])
+    fs.save_data(path / data['html_name'], data['html'])
+    for asset in data['assets']:
+        link = data['assets'][asset]
+        with Bar(
+            'LOAD - {}'.format(link),
+            max=len(data['assets']) / 100,
+            suffix='%(percent)d%%') as bar:  # noqa: E129
+            data['assets'][asset] = parse.get_data(data['assets'][asset])
+            bar.next()
+    for asset in data['assets']:
+            fs.save_data(path / asset, data['assets'][asset])  # noqa: E117
+    return path / data['html_name']

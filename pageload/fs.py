@@ -16,7 +16,11 @@ def save_data(path, data):
 
 def make_dir(path):
     try:
-        Path.mkdir(path)
-        logging.info('Create directory for files: {}'.format(path))
-    except OSError as e:
-        logging.warning('Error writing of file: {}'.format(e))
+        if Path.is_dir(path):
+            logging.info('Directory exists: {}'.format(path))
+            return path
+        else:
+            Path.mkdir(path)
+            logging.info('Create directory: {}'.format(path))
+    except OSError():
+        logging.warning('Error make dir: {}'.format(path))

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
+import logging
 import sys
-from pageload import cli
-from pageload import page_loader
+
+from pageload import cli, page_loader
 from pageload.config import set_logging
 from requests import exceptions
 
@@ -10,8 +11,10 @@ def main():
     path, url = cli.get_args()
     set_logging()
     try:
-        print(page_loader.download(path, url))
-    except (OSError, exceptions.RequestException):
+        result = page_loader.download(url, path)
+        logging.info('Save file: {}'.format(result))
+    except (OSError, exceptions.RequestException) as error:
+        logging.warning(error)
         sys.exit(1)
 
 

@@ -1,22 +1,21 @@
-import pytest
 import tempfile
-import requests
-import requests_mock
-from requests import exceptions
 from pathlib import Path
-from pageload import parse, fs
 
+import pytest
+import requests_mock
+from pageload import fs, parse
 
 url = 'https://page-loader.hexlet.repl.co'
 
 
-@pytest.mark.parametrize('html,img,exp_html', [
+@pytest.mark.parametrize('html,img,exp_html,output', [
     ('tests/fixtures/page-loader-hexlet-repl-co.html',
      'tests/fixtures/page-loader-hexlet-repl-co-assets-professions-nodejs.png',
-     'tests/fixtures/expected.html'
+     'tests/fixtures/expected.html',
+     'page-loader-hexlet-repl-co_files'
      ),
 ])
-def test_download_html(html, img, exp_html):
+def test_download_html(html, img, exp_html, output):
     with open(html) as data:
         test_html = data.read()
         data.close()
@@ -30,33 +29,23 @@ def test_download_html(html, img, exp_html):
         mock.get(url, text=test_html)
     with tempfile.TemporaryDirectory() as path:
         path = Path(path)
-        name = parse.get_name(url) + '.html'
-        app_html = fs.save_data(
-            path / name,
-            requests.get(url).text
+        url_parse = parse.parse(url)
+        fs.make_dir(path / url_parse['output'])
+        mock.get(
+            url_parse['assets'][Path(Path(output) / Path(img).name)],
+            content=test_img
         )
-        assert Path.is_file(app_html)
-        assert Path(app_html).name == Path(html).name
-        assert Path.read_text(app_html) == test_html
-        domain = parse.get_domain(url + '/courses')
-        app = Path(parse.get_name(url) + '_files')
-        fs.make_dir(path / app)
-        assets, finished_html = parse.get_assets(app_html, domain, app)
-        mock.get(assets[Path(img).name], content=test_img)
-        finished_img = fs.save_data(
-            path / app / Path(img).name,
-            requests.get(assets[Path(img).name]).content
+        page = fs.save_data(
+            path / url_parse['html_name'],
+            url_parse['html']
         )
-        result = fs.save_data(app_html, finished_html)
-        assert domain == url
-        assert Path.is_dir(path / app)
-        assert Path.is_file(finished_img)
-        assert Path.read_bytes(finished_img) == test_img
-        assert Path.read_text(result) == exp_html
-
-
-def test_response():
-    with pytest.raises(exceptions.RequestException):
-        with requests_mock.Mocker() as mock:
-            mock.get(url, status_code=404)
-            parse.get_data(url)
+        test_image = fs.save_data(
+            path / url_parse['output'] / Path(img).name,
+            parse.get_data(
+                url_parse['assets'][Path(Path(output) / Path(img).name)])
+        )
+        assert Path.is_file(page)
+        assert Path(page).name == Path(html).name
+        assert Path.read_text(page) == exp_html
+        assert Path.is_file(test_image)
+        assert Path.read_bytes(test_image) == test_img
