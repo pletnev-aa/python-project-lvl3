@@ -22,5 +22,5 @@ def make_dir(path):
         else:
             Path.mkdir(path)
             logging.info('Create directory: {}'.format(path))
-    except OSError():
+    except:
         logging.warning('Error make dir: {}'.format(path))

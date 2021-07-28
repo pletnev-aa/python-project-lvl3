@@ -1,11 +1,15 @@
+import sys
 from pageload import fs, parse
 from progress.bar import Bar
 
 
 def download(url, path):
     data = parse.parse(url)
-    fs.make_dir(path / data['output'])
-    fs.save_data(path / data['html_name'], data['html'])
+    try:
+        fs.make_dir(path / data['output'])
+        fs.save_data(path / data['html_name'], data['html'])
+    except:
+        sys.exit(1)
     for asset in data['assets']:
         link = data['assets'][asset]
         with Bar(

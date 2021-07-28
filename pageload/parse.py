@@ -1,3 +1,4 @@
+import sys
 import logging
 import re
 from pathlib import Path
@@ -25,7 +26,10 @@ def get_data(url):
 
 
 def get_assets(url, domain, output):
-    html_soup = BeautifulSoup(get_data(url), 'html.parser')
+    try:
+        html_soup = BeautifulSoup(get_data(url), 'html.parser')
+    except:
+        sys.exit(1)
     names = []
     links = []
     for tag in html_soup.find_all(TAGS.keys()):
