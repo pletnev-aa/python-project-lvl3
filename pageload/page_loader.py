@@ -8,7 +8,7 @@ def download(url, path):
     try:
         fs.make_dir(path / data['output'])
         fs.save_data(path / data['html_name'], data['html'])
-    except:
+    except:  # noqa: E722
         sys.exit(1)
     for asset in data['assets']:
         link = data['assets'][asset]
