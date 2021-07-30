@@ -7,10 +7,14 @@ def save_data(path, data):
         decoding = 'wb'
     else:
         decoding = 'w'
-    with open(path, decoding) as file:
-        file.write(data)
-        logging.info('Save file: {}'.format(path))
-        file.close()
+    try:
+        with open(path, decoding) as file:
+            file.write(data)
+            logging.info('Save file: {}'.format(path))
+            file.close()
+    except (FileNotFoundError, OSError) as e:
+        logging.warning('{}: {}'.format(e, path))
+        raise e
     return path
 
 
@@ -22,5 +26,6 @@ def make_dir(path):
         else:
             Path.mkdir(path)
             logging.info('Create directory: {}'.format(path))
-    except:  # noqa: E722
-        logging.warning('Error make dir: {}'.format(path))
+    except (FileNotFoundError, OSError) as e:
+        logging.warning('{}: {}'.format(e, path))
+        raise e
