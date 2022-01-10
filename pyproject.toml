@@ -17,7 +17,7 @@ html5lib = "^1.1"
 progress = "^1.5"
 
 [tool.poetry.scripts]
-pageload = 'pageload.scripts.page_loader:main'
+pageload = 'pageload.scripts.main:main'
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"
